@@ -9,7 +9,7 @@ import Rank from './components/Rank/Rank';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import 'tachyons';
 import Particles from 'react-particles-js';
-import Clarifai from 'clarifai'
+import Clarifai from 'clarifai';
 
 const particleOptions = {
   particles: {
