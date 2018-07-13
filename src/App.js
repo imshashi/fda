@@ -9,7 +9,6 @@ import Rank from './components/Rank/Rank';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import 'tachyons';
 import Particles from 'react-particles-js';
-import Clarifai from 'clarifai';
 
 const particleOptions = {
   particles: {
@@ -24,10 +23,6 @@ const particleOptions = {
     }
   }
 }
-
-const app = new Clarifai.App({
-  apiKey: 'af9d1986e1b4481a8f92d6328ff3f8fe'
-});
 
 const initialState = {
   input: '',
@@ -83,27 +78,31 @@ class App extends Component {
 
   onButtonSubmit = (event) => {
     this.setState({ imageUrl: this.state.input });
-    app.models
-      .predict(
-        Clarifai.FACE_DETECT_MODEL,
-        this.state.input)
-      .then( response => {
-        if(response) {
-          fetch('http://localhost:3000/image', {
-            method: 'put',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: this.state.user.id
-            })
-          })
-            .then(response => response.json())
-            .then(count => {
-              this.setState(Object.assign(this.state.user, { entries: count }));
-            })
-        }
-        this.displayFaceBox(this.calculateFaceLocation(response))
+    fetch('http://localhost:3000/imageurl', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        input: this.state.input
       })
-      .catch(err => console.log(err));
+    })
+    .then(response => response.json())
+    .then( response => {
+      if(response) {
+        fetch('http://localhost:3000/image', {
+          method: 'put',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: this.state.user.id
+          })
+        })
+          .then(response => response.json())
+          .then(count => {
+            this.setState(Object.assign(this.state.user, { entries: count }));
+          })
+      }
+      this.displayFaceBox(this.calculateFaceLocation(response))
+    })
+    .catch(err => console.log(err));
   }
 
   onRouteChange = (route) => {
